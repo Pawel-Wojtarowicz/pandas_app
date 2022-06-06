@@ -1,6 +1,8 @@
+from turtle import width
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Statystyki roczników GUS",
                    page_icon=":chart_with_downwards_trend:", layout="wide")
@@ -22,8 +24,9 @@ df['Rok'] = df['Rok'].fillna(0)
 df = df.astype({"Rok": "int", "Ogółem": "int",
                "Mężczyźni": "int", "Kobiety": "int"})
 
-
 # insertion of years
+
+
 def set_years():
     temp = 0
     for x in range(3876):
@@ -34,19 +37,16 @@ def set_years():
 
 
 set_years()
-print(df)
+# print(df)
 
 # sidebar
 st.sidebar.header("Filtruj:")
 year = st.sidebar.multiselect(
-    "Wybierz Rok:", options=df["Rok"].unique(), default=[2022])
+    "Wybierz Rok:", options=df["Rok"].unique(), default=[2025, 2026, 2027])
 age = st.sidebar.multiselect(
-    "Wybierz Wiek:", options=df["Wiek"].unique(), default=df["Wiek"][21:23])
-#slider_range = st.sidebar.slider("Wybierz zakres:", value=[0, 100])
-# print(slider)
+    "Wybierz Wiek:", options=df["Wiek"].unique(), default=df["Wiek"][30:35])
 
 df_selection = df.query("Rok == @year & Wiek == @age")
-
 
 # main page
 st.title(":bar_chart: Statystyki roczników - GUS")
@@ -57,16 +57,22 @@ men = int(df_selection["Mężczyźni"].sum())
 women = int(df_selection["Kobiety"].sum())
 
 left_col, middle_col, right_col = st.columns(3)
-with left_col:
+with right_col:
     st.subheader("Ogółem:")
     st.subheader(total)
-with middle_col:
-    st.subheader("Mężczyźni:")
+with left_col:
+    st.subheader("Mężczyzn:")
     st.subheader(men)
-with right_col:
-    st.subheader("Kobiety:")
+with middle_col:
+    st.subheader("Kobiet:")
     st.subheader(women)
 
 st.markdown("---")
 
-st.dataframe(df_selection)
+data = ['Mężczyźni', 'Kobiety', 'Ogółem']
+mycolors = ["#6aa7d9", "#eb3e3b", "#88f793"]
+fig = go.Figure([go.Bar(x=data, y=[men, women, total],
+                text=df_selection[data].sum(), marker=dict(color=mycolors))])
+st.plotly_chart(fig)
+
+# print(df_selection["Kobiety"].sum())
