@@ -1,4 +1,3 @@
-from turtle import width
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -35,9 +34,8 @@ def set_years():
         else:
             df.iloc[[x], [0]] = temp
 
-
 set_years()
-# print(df)
+
 
 # sidebar
 st.sidebar.header("Filtruj:")
@@ -74,5 +72,3 @@ mycolors = ["#6aa7d9", "#eb3e3b", "#88f793"]
 fig = go.Figure([go.Bar(x=data, y=[men, women, total],
                 text=df_selection[data].sum(), marker=dict(color=mycolors))])
 st.plotly_chart(fig)
-
-# print(df_selection["Kobiety"].sum())
